@@ -31,6 +31,8 @@
 #include "MultiCameraPnP.h"
 #include "BundleAdjuster.h"
 
+#include <cassert>
+
 using namespace std;
 
 #ifdef HAVE_OPENCV_GPU
@@ -50,7 +52,7 @@ int MultiCameraPnP::FindHomographyInliers2Views(int vi, int vj)
 	double minVal,maxVal; cv::minMaxIdx(ipts,&minVal,&maxVal); //TODO flatten point2d?? or it takes max of width and height
 
 	vector<uchar> status;
-	cv::Mat H = cv::findHomography(ipts,jpts,status,CV_RANSAC, 0.004 * maxVal); //threshold from Snavely07
+	cv::Mat H = cv::findHomography(ipts,jpts,status,cv::RANSAC, 0.004 * maxVal); //threshold from Snavely07
 	return cv::countNonZero(status); //number of inliers
 }
 
@@ -231,7 +233,7 @@ bool MultiCameraPnP::FindPoseEstimation(
 	if(!use_gpu) {
 		//use CPU
 		double minVal,maxVal; cv::minMaxIdx(imgPoints,&minVal,&maxVal);
-		CV_PROFILE("solvePnPRansac",cv::solvePnPRansac(ppcloud, imgPoints, K, distortion_coeff, rvec, t, true, 1000, 0.006 * maxVal, 0.25 * (double)(imgPoints.size()), inliers, CV_EPNP);)
+		CV_PROFILE("solvePnPRansac",cv::solvePnPRansac(ppcloud, imgPoints, K, distortion_coeff, rvec, t, true, 1000, 0.006 * maxVal, 0.5, inliers, cv::SOLVEPNP_EPNP);)
 		//CV_PROFILE("solvePnP",cv::solvePnP(ppcloud, imgPoints, K, distortion_coeff, rvec, t, true, CV_EPNP);)
 	} else {
 #ifdef HAVE_OPENCV_GPU

@@ -34,7 +34,10 @@
 
 #ifndef WIN32
 #include <dirent.h>
+#else
+#include <windows.h>
 #endif
+
 
 using namespace std;
 using namespace cv;

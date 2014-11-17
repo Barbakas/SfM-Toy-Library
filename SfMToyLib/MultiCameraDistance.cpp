@@ -32,6 +32,8 @@
 #include "OFFeatureMatcher.h"
 #include "GPUSURFFeatureMatcher.h"
 
+#include <cassert>
+
 void MultiCameraDistance::setImages(const std::vector<cv::Mat>& imgs_,
 		const std::vector<std::string>& imgs_names_,
 		const std::string& imgs_path_)
@@ -52,7 +54,7 @@ void MultiCameraDistance::setImages(const std::vector<cv::Mat>& imgs_,
 		imgs_orig.push_back(cv::Mat_<cv::Vec3b>());
 		if (!imgs_[i].empty()) {
 			if (imgs_[i].type() == CV_8UC1) {
-				cvtColor(imgs_[i], imgs_orig[i], CV_GRAY2BGR);
+				cvtColor(imgs_[i], imgs_orig[i], cv::COLOR_GRAY2BGR);
 			} else if (imgs_[i].type() == CV_32FC3 || imgs_[i].type()
 					== CV_64FC3) {
 				imgs_[i].convertTo(imgs_orig[i], CV_8UC3, 255.0);
@@ -62,7 +64,7 @@ void MultiCameraDistance::setImages(const std::vector<cv::Mat>& imgs_,
 		}
 
 		imgs.push_back(cv::Mat());
-		cvtColor(imgs_orig[i], imgs[i], CV_BGR2GRAY);
+		cvtColor(imgs_orig[i], imgs[i], cv::COLOR_BGR2GRAY);
 
 		imgpts.push_back(std::vector<cv::KeyPoint>());
 		imgpts_good.push_back(std::vector<cv::KeyPoint>());
@@ -106,14 +108,14 @@ void MultiCameraDistance::OnlyMatchFeatures()
 	if (use_rich_features) {
 		if (use_gpu) {
 			std::cout << "Using GPU\n";
-			feature_matcher = new GPUSURFFeatureMatcher(imgs,imgpts);
+			feature_matcher.reset(new GPUSURFFeatureMatcher(imgs,imgpts));
 		} else {
 			std::cout << "Using CPU\n";
-			feature_matcher = new RichFeatureMatcher(imgs,imgpts);
+			feature_matcher.reset( new RichFeatureMatcher(imgs, imgpts));
 		}
 	} else {
 		std::cout << "Using Optical Flow\n";
-		feature_matcher = new OFFeatureMatcher(use_gpu,imgs,imgpts);
+		feature_matcher.reset(new OFFeatureMatcher(use_gpu, imgs, imgpts));
 	}	
 
 	int loop1_top = imgs.size() - 1, loop2_top = imgs.size();

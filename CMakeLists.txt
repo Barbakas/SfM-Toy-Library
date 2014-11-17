@@ -21,11 +21,16 @@
 #  SOFTWARE.
 
 project(SfMToyExample)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+
+set(BUILD_SHARED_LIBS OFF)
+
 find_package(OpenMP)
 find_package(OpenGL)
 
@@ -46,15 +51,20 @@ IF(USE_GUI)
 ENDIF(USE_GUI)
 
 IF(USE_QT)
-	########## Qt stuff ##########
-	find_package(Qt4 REQUIRED QtGui QtOpenGL QtXml)
+	########## Qt stuff ##########          
+  find_package(Qt5Widgets)
+  find_package(Qt5Xml)
+  find_package(Qt5OpenGL)
+  #find_package(Qt5Widgets)
+  
+	#find_package(Qt4 REQUIRED QtGui QtOpenGL QtXml)
 	
-	ADD_DEFINITIONS(${QT_DEFINITIONS})
-	include_directories(${QT_INCLUDES})
-	include(${QT_USE_FILE}) 
+
+	include_directories( ${Qt5Widgets_INCLUDE_DIRS} ${QtXml_INCLUDE_DIRS} ${QtOpenGL_INCLUDE_DIRS} )
+	#include(${QT_USE_FILE}) 
 	
-	QT4_WRAP_UI( MY_UI_HDRS sfmtoy.ui )
-	QT4_WRAP_CPP( MY_MOC_SRCS ViewerInterface.h sfmviewer.h )
+	QT5_WRAP_UI( MY_UI_HDRS sfmtoy.ui )
+	QT5_WRAP_CPP( MY_MOC_SRCS ViewerInterface.h sfmviewer.h )
 	SOURCE_GROUP(QT_MOC_SRCS FILES ${MY_MOC_SRCS})
 	
 	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} ) #qt wrapping creates some sources
@@ -74,7 +84,7 @@ IF(USE_QT)
 	        ENV QGLVIEWERROOT
 	        ENV LD_LIBRARY_PATH
 	        ENV LIBRARY_PATH
-	  PATH_SUFFIXES QGLViewer QGLViewer/release
+	  PATH_SUFFIXES debug release
 	)
 	IF(NOT QGLVIEWER_LIB)
 	   message(FATAL_ERROR "QGLVIEWER not found")
@@ -134,10 +144,13 @@ add_executable(SfMToyUI
 target_link_libraries(SfMToyUI 
 	SfMToyLibrary
 	${OpenCV_LIBS}
-	${QT_LIBRARIES} 
 	${QGLVIEWER_LIB}
-	${OPENGL_LIBRARIES}
+	${OPENGL_LIBRARIES} 
 	)
+     
+target_link_libraries(SfMToyUI Qt5::Widgets)
+target_link_libraries(SfMToyUI Qt5::Xml)
+target_link_libraries(SfMToyUI Qt5::OpenGL)
 
 if(APPLE)
 	add_custom_command(TARGET SfMToyUI POST_BUILD COMMAND install_name_tool -change QGLViewer.framework/Versions/2/QGLViewer ${QGLVIEWER_DIR_HINT}/QGLViewer.framework/Versions/2/QGLViewer ./SfMToyUI )

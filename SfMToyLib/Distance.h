@@ -75,9 +75,9 @@ public:
 		left_im_.copyTo(left_im);
 		right_im_.copyTo(right_im);
 		left_im.copyTo(left_im_orig);
-		cvtColor(left_im_orig, left_im, CV_BGR2GRAY);
+		cvtColor(left_im_orig, left_im, cv::COLOR_BGR2GRAY);
 		right_im.copyTo(right_im_orig);
-		cvtColor(right_im_orig, right_im, CV_BGR2GRAY);
+		cvtColor(right_im_orig, right_im, cv::COLOR_BGR2GRAY);
 		
 		P = cv::Matx34d(1,0,0,0,
 						0,1,0,0,

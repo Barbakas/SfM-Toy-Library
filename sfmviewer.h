@@ -29,7 +29,7 @@
 #pragma once
 
 
-#include <QGLViewer/qglviewer.h>
+#include <qglviewer.h>
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QThreadPool>
@@ -63,7 +63,7 @@ protected :
 
 public:
 	SFMViewer(QWidget *parent = 0):QGLViewer(QGLFormat::defaultFormat(),parent),vizScale(1.0) {
-		distance = new MultiCameraPnP();
+		distance.reset( new MultiCameraPnP() );
 		distance->attach(this);
 		m_global_transform = Eigen::Affine3d::Identity();
 	}
@@ -103,7 +103,9 @@ public slots:
 		m_pcldrgb.clear();
 		m_cameras.clear();
 		m_cameras_transforms.clear();
-		QThreadPool::globalInstance()->start(this);
+
+		run();
+		//QThreadPool::globalInstance()->start(this);
 	}
 	void setVizScale(int i) { vizScale = (float)(i); updateGL(); }
 };

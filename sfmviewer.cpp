@@ -47,7 +47,7 @@ void SFMViewer::update(std::vector<cv::Point3d> pcld,
 			cldm.row(i)(2) = pcld[i].z;
 		}
 		cv::Mat_<double> mean; //cv::reduce(cldm,mean,0,CV_REDUCE_AVG);
-		cv::PCA pca(cldm, mean, CV_PCA_DATA_AS_ROW);
+		cv::PCA pca(cldm, mean, cv::PCA::DATA_AS_ROW);
 		scale_cameras_down = 1.0 / (3.0 * sqrt(pca.eigenvalues.at<double> (0)));
 //		std::cout << "emean " << mean << std::endl;
 //		m_global_transform = Eigen::Translation<double,3>(-Eigen::Map<Eigen::Vector3d>(mean[0]));
