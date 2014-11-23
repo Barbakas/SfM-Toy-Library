@@ -48,7 +48,7 @@ RichFeatureMatcher::RichFeatureMatcher(std::vector<cv::Mat>& imgs_,
 									   std::vector<std::vector<cv::KeyPoint> >& imgpts_) :
 	imgpts(imgpts_), imgs(imgs_)
 {
-	auto orb = AKAZE::create();
+	auto orb = cv::ORB::create();
 
 	//detector = cv::FeatureDetector::create<FeatureDetector>(cv::String("PyramidFAST"));
 	//extractor = cv::DescriptorExtractor::create<DescriptorExtractor>(cv::String("ORB"));

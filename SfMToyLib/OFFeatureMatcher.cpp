@@ -54,7 +54,7 @@ OFFeatureMatcher::OFFeatureMatcher(
 AbstractFeatureMatcher(_use_gpu),imgpts(imgpts_), imgs(imgs_)
 {
 	//detect keypoints for all images
-	auto ffd = cv::Feature2D::create<cv::FastFeatureDetector>("FAST");
+    auto ffd = cv::FastFeatureDetector::create();
 //	DenseFeatureDetector ffd;
 	ffd->detect(imgs, imgpts);
 }
